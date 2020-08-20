@@ -7,13 +7,58 @@
     <groupId>org.example</groupId>
     <artifactId>project-reactor-sample</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <properties>
+        <reactor-core.version>3.3.9.RELEASE</reactor-core.version>
+        <java.version>11</java.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <slf4j-simple.version>1.7.29</slf4j-simple.version>
+        <slf4j-api.version>1.7.30</slf4j-api.version>
+        <lombok.version>1.18.12</lombok.version>
+        <junit-jupiter-api.version>5.6.2</junit-jupiter-api.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-core</artifactId>
-            <version>3.3.9.RELEASE</version>
+            <version>${reactor-core.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j-simple.version}</version>
+        </dependency>
+
+        <!-- Test dependencies -->
+
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <version>${reactor-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit-jupiter-api.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 
 
