@@ -224,7 +224,7 @@ public class FluxTest {
                 .delayElements(Duration.ofMillis(100))
                 .publish()
                 .autoConnect(2);
-        
+
         StepVerifier
                 .create(fluxAutoConnect)
                 .then(fluxAutoConnect::subscribe)
