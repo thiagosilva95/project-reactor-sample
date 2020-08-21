@@ -62,4 +62,22 @@ public class MonoTest {
                 .expectError(RuntimeException.class)
                 .verify();
     }
+
+    @Test
+    public void monoSubscriberConsumerComplete() {
+        String name = "Thiago";
+        Mono<String> mono = Mono.just(name)
+                .log()
+                .map(s -> s.toUpperCase());
+
+        mono.subscribe(s -> log.info("Value {}", s),
+                Throwable::printStackTrace,
+                () -> log.info("FINISHED"));
+
+        StepVerifier.create(mono)
+                .expectNext("Thiago".toUpperCase())
+                .verifyComplete();
+    }
+
+    
 }
