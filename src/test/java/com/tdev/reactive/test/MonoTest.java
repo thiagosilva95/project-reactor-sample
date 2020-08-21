@@ -2,6 +2,8 @@ package com.tdev.reactive.test;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @Slf4j
 /**
@@ -22,7 +24,42 @@ import org.junit.jupiter.api.Test;
 public class MonoTest {
 
     @Test
-    public void test() {
-        log.info("Everything working as intended");
+    public void monoSubscriber() {
+        String name = "Thiago";
+        Mono<String> mono = Mono.just(name)
+                .log();
+
+        mono.subscribe();
+
+        StepVerifier.create(mono)
+                .expectNext("Thiago")
+                .verifyComplete();
+    }
+
+    @Test
+    public void monoSubscriberConsumer() {
+        String name = "Thiago";
+        Mono<String> mono = Mono.just(name)
+                .log();
+
+        mono.subscribe(s -> log.info("Value {}", s));
+
+        StepVerifier.create(mono)
+                .expectNext("Thiago")
+                .verifyComplete();
+    }
+
+    @Test
+    public void monoSubscriberConsumerError() {
+        String name = "Thiago";
+        Mono<String> mono = Mono.just(name)
+                .map(s -> {throw new RuntimeException("Testeing mono with error");});
+
+        mono.subscribe(s -> log.info("Name {}", s), s -> log.error("Somethings bad happened"));
+        mono.subscribe(s -> log.info("Name {}", s), Throwable::printStackTrace);
+
+        StepVerifier.create(mono)
+                .expectError(RuntimeException.class)
+                .verify();
     }
 }
