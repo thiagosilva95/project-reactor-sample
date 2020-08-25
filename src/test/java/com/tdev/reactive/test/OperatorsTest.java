@@ -3,8 +3,15 @@ package com.tdev.reactive.test;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Slf4j
 public class OperatorsTest {
@@ -131,5 +138,25 @@ public class OperatorsTest {
                 .expectSubscription()
                 .expectNext(1, 2, 3, 4)
                 .verifyComplete();
+    }
+
+    @Test
+    public void subscribeOnIO() throws InterruptedException {
+        Mono<List<String>> list = Mono.fromCallable(() -> Files.readAllLines(Path.of("text-file")))
+                .log()
+                .subscribeOn(Schedulers.boundedElastic());
+
+        //list.subscribe(s -> log.info("{}", s));
+
+        StepVerifier.create(list)
+                .expectSubscription()
+                .thenConsumeWhile(l -> {
+                    assertFalse(l.isEmpty());
+                    log.info("Size: {}", l.size());
+                    return true;
+                })
+        .verifyComplete();
+
+
     }
 }
