@@ -361,11 +361,28 @@ public class OperatorsTest {
         StepVerifier
                 .create(flatFlux)
                 .expectSubscription()
+                .expectNext("nameB1", "nameB2", "nameA1", "nameA2")
+                .verifyComplete();
+    }
+
+    @Test
+    public void flatMapSequentialOperatior() throws Exception {
+        Flux<String> flux = Flux.just("a", "b");
+
+        Flux<String> flatFlux = flux.map(String::toUpperCase)
+                .flatMapSequential(this::findByName)
+                .log();
+
+        flatFlux.subscribe(o -> log.info(o.toString()));
+
+        StepVerifier
+                .create(flatFlux)
+                .expectSubscription()
                 .expectNext("nameA1", "nameA2", "nameB1", "nameB2")
                 .verifyComplete();
     }
 
     public Flux<String> findByName(String name) {
-        return name.equals("A") ? Flux.just("nameA1", "nameA2") : Flux.just("nameB1", "nameB2");
+        return name.equals("A") ? Flux.just("nameA1", "nameA2").delayElements(Duration.ofMillis(100)) : Flux.just("nameB1", "nameB2");
     }
 }
