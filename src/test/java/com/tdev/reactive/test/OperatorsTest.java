@@ -159,4 +159,21 @@ public class OperatorsTest {
 
 
     }
+
+    @Test
+    public void switchIfEmptyOperator() {
+        Flux<Object> flux = emptyFlux()
+                .switchIfEmpty(Flux.just("not empty anymore"))
+                .log();
+
+        StepVerifier
+                .create(flux)
+                .expectNext("not empty anymore")
+                .expectComplete()
+                .verify();
+    }
+
+    private  Flux<Object> emptyFlux() {
+        return Flux.empty();
+    }
 }
