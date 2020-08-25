@@ -286,4 +286,21 @@ public class OperatorsTest {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    public void mergeSequentialOperator() throws InterruptedException {
+        Flux<String> flux1 = Flux.just("a", "b").delayElements(Duration.ofMillis(200));
+        Flux<String> flux2 = Flux.just("c", "d");
+
+        Flux<String> mergeFlux = Flux.mergeSequential(flux1, flux2, flux1)
+                .delayElements(Duration.ofMillis(200))
+                .log();
+
+        StepVerifier
+                .create(mergeFlux)
+                .expectSubscription()
+                .expectNext("a", "b", "c", "d", "a", "b")
+                .expectComplete()
+                .verify();
+    }
 }
