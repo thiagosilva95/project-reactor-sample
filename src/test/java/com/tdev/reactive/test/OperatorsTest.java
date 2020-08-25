@@ -1,6 +1,7 @@
 package com.tdev.reactive.test;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -10,6 +11,7 @@ import reactor.test.StepVerifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -171,6 +173,24 @@ public class OperatorsTest {
                 .expectNext("not empty anymore")
                 .expectComplete()
                 .verify();
+    }
+
+    @Test
+    public void deferOperator() throws InterruptedException {
+        Mono<Long> just = Mono.just(System.currentTimeMillis());
+        Mono<Long> defer = Mono.defer(() -> Mono.just(System.currentTimeMillis()));
+
+        defer.subscribe(l -> log.info("time {}", l));
+        Thread.sleep(100);
+        defer.subscribe(l -> log.info("time {}", l));
+        Thread.sleep(100);
+        defer.subscribe(l -> log.info("time {}", l));
+        Thread.sleep(100);
+        defer.subscribe(l -> log.info("time {}", l));
+
+        AtomicLong atomicLong = new AtomicLong();
+        defer.subscribe(atomicLong::set);
+        Assertions.assertTrue(atomicLong.get() > 0);
     }
 
     private  Flux<Object> emptyFlux() {
