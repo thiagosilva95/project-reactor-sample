@@ -265,4 +265,25 @@ public class OperatorsTest {
                 .expectComplete()
                 .verify();
     }
+
+    @Test
+    public void mergeWithOperator() throws InterruptedException {
+        Flux<String> flux1 = Flux.just("a", "b").delayElements(Duration.ofMillis(200));
+        Flux<String> flux2 = Flux.just("c", "d");
+
+        Flux<String> mergeFlux = flux1.mergeWith(flux2)
+                //     .delayElements(Duration.ofMillis(200))
+                .log();
+
+        mergeFlux.subscribe(log::info);
+
+        Thread.sleep(1000);
+
+        StepVerifier
+                .create(mergeFlux)
+                .expectSubscription()
+                .expectNext("c", "d", "a", "b")
+                .expectComplete()
+                .verify();
+    }
 }
