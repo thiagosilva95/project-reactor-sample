@@ -10,6 +10,7 @@ import reactor.test.StepVerifier;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -240,6 +241,27 @@ public class OperatorsTest {
                 .create(combineLatest)
                 .expectSubscription()
                 .expectNext("BC", "BD")
+                .expectComplete()
+                .verify();
+    }
+
+    @Test
+    public void mergeOperator() throws InterruptedException {
+        Flux<String> flux1 = Flux.just("a", "b").delayElements(Duration.ofMillis(200));
+        Flux<String> flux2 = Flux.just("c", "d");
+
+        Flux<String> mergeFlux = Flux.merge(flux1, flux2)
+           //     .delayElements(Duration.ofMillis(200))
+                .log();
+
+        mergeFlux.subscribe(log::info);
+
+        Thread.sleep(1000);
+
+        StepVerifier
+                .create(mergeFlux)
+                .expectSubscription()
+                .expectNext("c", "d", "a", "b")
                 .expectComplete()
                 .verify();
     }
