@@ -229,6 +229,27 @@ public class OperatorsTest {
     }
 
     @Test
+    public void concatOperatorError() {
+        Flux<String> flux1 = Flux.just("a", "b")
+                .map(s -> {
+                    if (s.equals("b")) {
+                        throw new IllegalArgumentException();
+                    }
+                    return s;
+                });
+        Flux<String> flux2 = Flux.just("c", "d");
+
+        Flux<String> concatFlux = Flux.concatDelayError(flux1, flux2).log();
+
+        StepVerifier
+                .create(concatFlux)
+                .expectSubscription()
+                .expectNext("a", "c", "d")
+                .expectError()
+                .verify();
+    }
+
+    @Test
     public void combineLatestOperator() {
         Flux<String> flux1 = Flux.just("a", "b");
         Flux<String> flux2 = Flux.just("c", "d");
