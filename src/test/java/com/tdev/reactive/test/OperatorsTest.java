@@ -411,6 +411,27 @@ public class OperatorsTest {
                 .verifyComplete();
     }
 
+    @Test
+    public void zipWithOperator() {
+        Flux<String> titleFlux = Flux.just("a", "b");
+        Flux<String> studioFlux = Flux.just("c", "d");
+        Flux<Integer> episodesFlux = Flux.just(12, 24);
+
+        Flux<Anime> animeFlux = titleFlux.zipWith(episodesFlux)
+                .flatMap(tuple -> Flux.just(new Anime(tuple.getT1(), null, tuple.getT2())));
+
+        //animeFlux.subscribe(anime -> log.info(anime.toString()));
+
+        StepVerifier
+                .create(animeFlux)
+                .expectSubscription()
+                .expectNext(
+                        new Anime("a", null, 12),
+                        new Anime("b", null, 24)
+                )
+                .verifyComplete();
+    }
+
     @AllArgsConstructor
     @Getter
     @ToString
