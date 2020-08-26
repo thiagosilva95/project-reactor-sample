@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import reactor.blockhound.BlockHound;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -22,6 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Slf4j
 public class OperatorsTest {
+
+    @BeforeAll
+    public static void setup() {
+        BlockHound.install();
+    }
 
     @Test
     public void subscribeOnSimple() {
@@ -276,12 +283,12 @@ public class OperatorsTest {
         Flux<String> flux2 = Flux.just("c", "d");
 
         Flux<String> mergeFlux = Flux.merge(flux1, flux2)
-           //     .delayElements(Duration.ofMillis(200))
+                .delayElements(Duration.ofMillis(200))
                 .log();
 
-        mergeFlux.subscribe(log::info);
+        //mergeFlux.subscribe(log::info);
 
-        Thread.sleep(1000);
+        //Thread.sleep(1000);
 
         StepVerifier
                 .create(mergeFlux)
